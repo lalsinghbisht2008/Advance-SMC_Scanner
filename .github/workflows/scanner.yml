@@ -1,0 +1,62 @@
+name: SMC Scanner
+
+# ONE workflow replaces the 7 old ones. Cron times are UTC.
+on:
+  schedule:
+    - cron: "*/5 3-10 * * 1-5"      # India session 08:30-16:25 IST, every 5 min
+    - cron: "*/15 0-2,11-23 * * *"  # off-hours: crypto + forex every 15 min
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "auto | india | mcx | crypto | forex (comma separated)"
+        default: "auto"
+      dry_run:
+        description: "true = print only, no Telegram"
+        default: "false"
+
+# never two scans at the same time (old setup ran many in parallel -> duplicate alerts / push conflicts)
+concurrency:
+  group: smc-scanner
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Restore data cache (instrument master + past candles)
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: smc-cache-${{ github.run_id }}
+          restore-keys: smc-cache-
+      - name: Run tests (fail fast if code is broken)
+        run: python -m pytest -q tests
+      - name: Scan
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          UPSTOX_ACCESS_TOKEN: ${{ secrets.UPSTOX_ACCESS_TOKEN }}
+        run: |
+          MARKET="${{ github.event.inputs.market || 'auto' }}"
+          DRY="${{ github.event.inputs.dry_run || 'false' }}"
+          if [ "$DRY" = "true" ]; then python run.py scan --market "$MARKET" --dry-run; else python run.py scan --market "$MARKET"; fi
+      - name: Save state (active trades / history)
+        run: |
+          git config user.name "smc-scanner-bot"
+          git config user.email "smc-scanner-bot@users.noreply.github.com"
+          git add state/
+          if ! git diff --cached --quiet; then
+            git commit -m "state update [skip ci]"
+            git pull --rebase -q || true
+            git push -q || echo "push failed (will retry next run)"
+          fi
