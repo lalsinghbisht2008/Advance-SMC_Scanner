@@ -1,0 +1,268 @@
+{
+    "GLENMARK_2026-10-23 14:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "GLENMARK",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 14:00:00+05:30",
+        "Sweep": "SSL Sweep at 2112.1",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 2107.7,
+        "SL": 2097.4,
+        "TP": 2133.45
+    },
+    "COLPAL_2026-10-23 14:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "COLPAL",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 14:00:00+05:30",
+        "Sweep": "SSL Sweep at 1588.0",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 1584.0,
+        "SL": 1576.84,
+        "TP": 1601.9
+    },
+    "GLENMARK_2026-10-23 14:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "GLENMARK",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 14:00:00+05:30",
+        "Sweep": "SSL Sweep at 2112.1",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 2107.7,
+        "SL": 2097.4,
+        "TP": 2133.45
+    },
+    "COLPAL_2026-10-23 14:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "COLPAL",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 14:00:00+05:30",
+        "Sweep": "SSL Sweep at 1588.0",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 1584.0,
+        "SL": 1576.84,
+        "TP": 1601.9
+    },
+    "GLENMARK_2026-10-23 15:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "GLENMARK",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 15:00:00+05:30",
+        "Sweep": "SSL Sweep at 2160.3",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 2107.7,
+        "SL": 2097.4,
+        "TP": 2133.45
+    },
+    "ONGC_2026-10-19 09:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "ONGC",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-19 09:00:00+05:30",
+        "Sweep": "SSL Sweep at 223.25",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 224.14,
+        "SL": 223.24,
+        "TP": 226.39
+    },
+    "SUZLON_2026-10-23 14:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "SUZLON",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 14:00:00+05:30",
+        "Sweep": "SSL Sweep at 36.95",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 37.0,
+        "SL": 36.81,
+        "TP": 37.47
+    },
+    "GLENMARK_2026-10-23 15:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "GLENMARK",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 15:00:00+05:30",
+        "Sweep": "SSL Sweep at 2160.3",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 2107.7,
+        "SL": 2097.4,
+        "TP": 2133.45
+    },
+    "ONGC_2026-10-19 09:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "ONGC",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-19 09:00:00+05:30",
+        "Sweep": "SSL Sweep at 223.25",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 224.14,
+        "SL": 223.24,
+        "TP": 226.39
+    },
+    "SUZLON_2026-10-23 14:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "SUZLON",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 14:00:00+05:30",
+        "Sweep": "SSL Sweep at 36.95",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 37.0,
+        "SL": 36.81,
+        "TP": 37.47
+    },
+    "AXISBANK_2026-10-23 10:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "AXISBANK",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 10:00:00+05:30",
+        "Sweep": "External SSL Sweep at 1200.3",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 1199.1,
+        "SL": 1194.51,
+        "TP": 1210.57
+    },
+    "CANBK_2026-10-23 10:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "CANBK",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 10:00:00+05:30",
+        "Sweep": "External SSL Sweep at 116.71",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 115.71,
+        "SL": 115.14,
+        "TP": 117.13
+    },
+    "DIVISLAB_2026-10-23 15:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "DIVISLAB",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 15:00:00+05:30",
+        "Sweep": "External SSL Sweep at 8937.5",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 8822.5,
+        "SL": 8785.39,
+        "TP": 8915.28
+    },
+    "NTPC_2026-10-23 15:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "NTPC",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 15:00:00+05:30",
+        "Sweep": "External SSL Sweep at 297.55",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 292.6,
+        "SL": 291.47,
+        "TP": 295.43
+    },
+    "HINDUNILVR_2026-10-22 14:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "HINDUNILVR",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-22 14:00:00+05:30",
+        "Sweep": "External SSL Sweep at 1814.4",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 1785.7,
+        "SL": 1779.53,
+        "TP": 1801.13
+    },
+    "GMRINFRA_2026-10-23 10:00:00+05:30_BUY \ud83d\udfe2": {
+        "Symbol": "GMRINFRA",
+        "Signal": "BUY \ud83d\udfe2",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 10:00:00+05:30",
+        "Sweep": "External SSL Sweep at 85.2",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 84.37,
+        "SL": 84.05,
+        "TP": 85.17
+    },
+    "AXISBANK_2026-10-23 10:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "AXISBANK",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 10:00:00+05:30",
+        "Sweep": "External SSL Sweep at 1200.3",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 1199.1,
+        "SL": 1194.51,
+        "TP": 1210.57
+    },
+    "CANBK_2026-10-23 10:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "CANBK",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 10:00:00+05:30",
+        "Sweep": "External SSL Sweep at 116.71",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 115.71,
+        "SL": 115.14,
+        "TP": 117.13
+    },
+    "DIVISLAB_2026-10-23 15:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "DIVISLAB",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 15:00:00+05:30",
+        "Sweep": "External SSL Sweep at 8937.5",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 8822.5,
+        "SL": 8785.39,
+        "TP": 8915.28
+    },
+    "NTPC_2026-10-23 15:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "NTPC",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 15:00:00+05:30",
+        "Sweep": "External SSL Sweep at 297.55",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 292.6,
+        "SL": 291.47,
+        "TP": 295.43
+    },
+    "HINDUNILVR_2026-10-22 14:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "HINDUNILVR",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-22 14:00:00+05:30",
+        "Sweep": "External SSL Sweep at 1814.4",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 1785.7,
+        "SL": 1779.53,
+        "TP": 1801.13
+    },
+    "GMRINFRA_2026-10-23 10:00:00+05:30_BUY \ud83d\udfe2 (SWING)": {
+        "Symbol": "GMRINFRA",
+        "Signal": "BUY \ud83d\udfe2 (SWING)",
+        "Timeframe": "1H (HTF) & 5M (Execution)",
+        "SweepTime": "2026-10-23 10:00:00+05:30",
+        "Sweep": "External SSL Sweep at 85.2",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 84.37,
+        "SL": 84.05,
+        "TP": 85.17
+    },
+    "SBIN_Model 1: Confirmed HL Sweep Reversal_960.8": {
+        "Symbol": "SBIN",
+        "Model": "Model 1: Confirmed HL Sweep Reversal",
+        "Context": "4H HL (960.7) Swept with 1H Close Rejection",
+        "Entry": 960.8,
+        "SL": 956.53,
+        "TP": 973.61
+    },
+    "SBIN_Model 1: Confirmed HL Sweep Reversal_961.85": {
+        "Symbol": "SBIN",
+        "Model": "Model 1: Confirmed HL Sweep Reversal",
+        "Context": "4H HL (960.7) Swept with 1H Close Rejection",
+        "Entry": 961.85,
+        "SL": 958.13,
+        "TP": 973.01
+    },
+    "AUROPHARMA_Model 1: Confirmed HL Sweep Reversal_1681.4": {
+        "Symbol": "AUROPHARMA",
+        "Model": "Model 1: Confirmed HL Sweep Reversal",
+        "Context": "4H HL (1677.1) Swept with 1H Close Rejection",
+        "Entry": 1681.4,
+        "SL": 1670.65,
+        "TP": 1713.65
+    }
+}

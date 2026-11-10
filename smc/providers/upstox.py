@@ -138,6 +138,11 @@ class UpstoxProvider(Provider):
         unit, itv = UNIT[tf]
         return parse_candles(self._get(f"{BASE}/intraday/{quote(key, safe='')}/{unit}/{itv}"))
 
+    def daily_context(self, key: str, now: pd.Timestamp) -> pd.DataFrame:
+        """Completed daily candles only (up to yesterday) -> immutable -> cached for the whole day."""
+        today = pd.Timestamp(now).tz_convert("Asia/Kolkata").date()
+        return self._history(key, "1d", today - timedelta(days=20), today - timedelta(days=1))
+
     def candles(self, key: str, tf: str, days: int, now: pd.Timestamp) -> pd.DataFrame:
         if tf not in UNIT:
             raise DataError(f"timeframe {tf} not supported by Upstox mapping")

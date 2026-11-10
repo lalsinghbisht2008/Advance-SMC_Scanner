@@ -1,0 +1,39 @@
+name: Global SMC Scanner (5-Min Loop)
+
+on:
+  schedule:
+    # Runs every 5 minutes Monday to Friday
+    - cron: '*/5 * * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  run-global-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas numpy pytz
+
+      - name: Execute Global SMC Scanner
+        env:
+          UPSTOX_ACCESS_TOKEN: ${{ secrets.UPSTOX_ACCESS_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python smc_global_scanner.py
+
+      - name: Commit State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add active_global_trades.json || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update global trades state [skip ci]" && git push)

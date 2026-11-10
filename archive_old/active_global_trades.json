@@ -1,0 +1,58 @@
+{
+    "BTCUSDT_20261020_1513": {
+        "Symbol": "BTCUSDT",
+        "Signal": "SELL \ud83d\udd34",
+        "Sweep": "PDH/BSL Sweep at 83072.46875",
+        "Trigger": "5M MSS + FVG + OB Retracement",
+        "Entry": 82402.43,
+        "SL": 82421.6,
+        "TP": 82354.5
+    },
+    "BTCUSDT_20261020_1542": {
+        "Symbol": "BTCUSDT",
+        "Signal": "SELL \ud83d\udd34",
+        "Sweep": "PDH/BSL Sweep at 83072.46875",
+        "Trigger": "5M MSS + FVG + OB Retracement",
+        "Entry": 82400.11,
+        "SL": 82421.62,
+        "TP": 82346.34
+    },
+    "Bitcoin_20261021_1748": {
+        "Asset": "Bitcoin",
+        "Signal": "SELL \ud83d\udd34",
+        "Context": "PDH/BSL Sweep at 84750.0[cite: 2]",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement[cite: 2]",
+        "Entry": 84585.35,
+        "SL": 84978.27,
+        "TP": 83603.05
+    },
+    "Bitcoin_20261024_0037": {
+        "Asset": "Bitcoin",
+        "Signal": "BUY \ud83d\udfe2",
+        "Context": "PDL/SSL Sweep at 80469.828125",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 80626.17,
+        "SL": 80288.39,
+        "TP": 81470.62
+    },
+    "Silver_2026-10-30 10:00:00-04:00_BUY \ud83d\udfe2": {
+        "Asset": "Silver",
+        "Signal": "BUY \ud83d\udfe2",
+        "Context": "PDL/SSL Sweep at 49.39500045776367",
+        "SweepTime": "2026-10-30 10:00:00-04:00",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 49.28,
+        "SL": 49.07,
+        "TP": 49.81
+    },
+    "Gold_2026-10-30 15:00:00-04:00_BUY \ud83d\udfe2": {
+        "Asset": "Gold",
+        "Signal": "BUY \ud83d\udfe2",
+        "Context": "PDL/SSL Sweep at 3885.89990234375",
+        "SweepTime": "2026-10-30 15:00:00-04:00",
+        "Trigger": "5M MSS + Displacement + FVG + OB Retracement",
+        "Entry": 3886.4,
+        "SL": 3873.68,
+        "TP": 3918.2
+    }
+}

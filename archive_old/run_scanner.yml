@@ -1,0 +1,63 @@
+name: SMC Multi-Scanner Auto Suite
+
+on:
+  schedule:
+    # Runs every 5 minutes during Indian Market Hours (9:15 AM to 3:30 PM IST -> 03:45 to 10:00 UTC)
+    - cron: '*/2 3-10 * * 1-5'
+  workflow_dispatch: # Manual run button in GitHub
+
+jobs:
+  run-scanners:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests pandas numpy yfinance
+
+      - name: Run Live SMC Scanner (Batch Rotation)
+        env:
+          UPSTOX_ACCESS_TOKEN: ${{ secrets.UPSTOX_ACCESS_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python smc_live_scanner.py
+
+      - name: Run Swing Scanner
+        env:
+          UPSTOX_ACCESS_TOKEN: ${{ secrets.UPSTOX_ACCESS_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python smc_swing_scanner.py
+
+      - name: Run Nifty Intraday Scanner
+        env:
+          UPSTOX_ACCESS_TOKEN: ${{ secrets.UPSTOX_ACCESS_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python nifty_intraday_scanner.py
+
+      - name: Run Global SMC Scanner (XAU, XAG, BTC)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python smc_global_scanner.py
+
+      - name: Commit & Push Updated State
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Auto-update scanner states and batch rotation" || echo "No changes to commit"
+          git pull origin main --rebase || true
+          git push origin main || true

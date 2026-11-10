@@ -54,6 +54,17 @@ python backtest.py --market crypto --symbol BTCUSDT --profile 5m --days 30
 python -m pytest tests
 ```
 
+## 1000+ stocks (batch mode)
+`symbols.txt` mein ek line par ek symbol rakhein, phir:
+```
+python run.py scan --market india --symbols-file symbols.txt --batch-size 40 --dry-run
+```
+Har run agla batch leta hai aur pointer `.cache/batch_ptr.json` mein save hota hai (dry-run mein bhi), end par wapas shuru se. Har 3 minute par apne aap:
+```
+python run.py loop --market india --symbols-file symbols.txt --batch-size 40 --every 3
+```
+Upstox limit 2000 calls / 30 min = ~200 calls per 3-min run. Naye symbol ke ~5 calls lagte hain (pehla pass), uske baad din bhar ~2 calls (beeta data cache hota hai). Isliye pehle din `--batch-size 40`, cache garam hone par 80-100. Limit khatam hone par scanner ruk-ruk kar nahi atakta, wo symbols skip karke agle batch mein aate hain. Manual (alag-alag) commands ka limiter alag process mein reset hota hai, isliye batch-size chhota rakhein.
+
 ## Settings kahan badalni hain
 - Watchlist, kill-zones, sessions, profiles: `smc/config.py`
 - Strategy parameters (swing strength, displacement, RR, entry mode, `require_idm`, `min_score`): `smc/engine.py -> Params`

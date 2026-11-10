@@ -33,6 +33,16 @@ def _markets(arg: str, now: pd.Timestamp) -> list:
     return names
 
 
+def _only(args):
+    if args.symbols_file:
+        from smc.runner import load_symbols_file
+        syms = load_symbols_file(args.symbols_file)
+        if not syms:
+            sys.exit(f"{args.symbols_file} is empty")
+        return syms
+    return [x.strip() for x in args.symbols.split(",")] if args.symbols else None
+
+
 def _profiles(arg):
     if not arg:
         return None
@@ -105,6 +115,9 @@ def main() -> int:
         s.add_argument("--profile", help="5m,15m,swing (default per market)")
         s.add_argument("--dry-run", action="store_true")
         s.add_argument("--symbols", help="comma list, to scan only these")
+        s.add_argument("--symbols-file", help="text file, one symbol per line (use for 1000+ stocks)")
+        s.add_argument("--batch-size", type=int, default=0,
+                       help="scan only the NEXT N symbols each run, then continue from there next time")
         if name == "loop":
             s.add_argument("--every", type=int, default=5, help="minutes between scans")
     t = sub.add_parser("selftest")
@@ -126,12 +139,12 @@ def main() -> int:
         if not mk:
             logging.info("No selected market is open right now - nothing to do.")
             return 0
-        only = [x.strip() for x in args.symbols.split(",")] if args.symbols else None
-        run_once(mk, _profiles(args.profile), args.dry_run, only, now)
+        only = _only(args)
+        run_once(mk, _profiles(args.profile), args.dry_run, only, now, batch_size=args.batch_size)
         return 0
     if args.cmd == "loop":
         names = list(C.MARKETS) if args.market == "auto" else _markets(args.market, now)
-        loop(names, _profiles(args.profile), args.dry_run, args.every)
+        loop(names, _profiles(args.profile), args.dry_run, args.every, _only(args), args.batch_size)
         return 0
     if args.cmd == "selftest":
         return cmd_selftest(args)

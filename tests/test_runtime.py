@@ -249,3 +249,36 @@ def test_dry_run_changes_nothing(tmp_path):
     from smc.runner import run_once
     scan_market(m, ["5m"], st, tg, now, dry_run=True, provider=FakeProvider(ltf, htf))
     assert tg.msgs == []                              # nothing sent
+
+
+# ------------------------------------------------------------------ batches / limiter
+def test_batch_rotation_wraps_and_persists(tmp_path):
+    from smc.runner import select_batch
+    f = tmp_path / "ptr.json"
+    syms = [f"S{i}" for i in range(10)]
+    a, s1, n = select_batch("india", syms, 4, f)
+    b, s2, _ = select_batch("india", syms, 4, f)
+    c, s3, _ = select_batch("india", syms, 4, f)
+    assert a == ["S0", "S1", "S2", "S3"] and b == ["S4", "S5", "S6", "S7"] and c == ["S8", "S9", "S0", "S1"]
+    assert (s1, s2, s3, n) == (0, 4, 8, 10)
+    d, *_ = select_batch("crypto", syms, 2, f)                       # separate pointer per market
+    assert d == ["S0", "S1"]
+    big, *_ = select_batch("x", syms[:3], 50, f)                     # batch larger than universe
+    assert big == ["S0", "S1", "S2"]
+
+
+def test_symbols_file_parsing(tmp_path):
+    from smc.runner import load_symbols_file
+    f = tmp_path / "s.txt"
+    f.write_text("reliance\nTCS, infy  # comment\n\n  m&m\nRELIANCE\n")
+    assert load_symbols_file(str(f)) == ["RELIANCE", "TCS", "INFY", "M&M"]
+
+
+def test_limiter_30min_budget_raises_instead_of_freezing():
+    import pytest as _p
+    from smc.providers.base import DataError, RateLimiter
+    rl = RateLimiter(per_sec=1000, per_min=1000, per_30min=5)
+    for _ in range(5):
+        rl.acquire()
+    with _p.raises(DataError, match="budget"):
+        rl.acquire()
