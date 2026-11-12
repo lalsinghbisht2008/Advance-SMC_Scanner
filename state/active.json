@@ -1,1 +1,54 @@
-{}
+{
+  "forex:EURUSD|5m|BUY|202611120740": {
+    "bias": "bearish",
+    "bos_time": null,
+    "created": "2026-11-12T07:57:08.925350+00:00",
+    "entry": 1.107726514339447,
+    "events_done": 0,
+    "fvg": [
+      1.108033299446106,
+      1.1084016561508179
+    ],
+    "hh_level": null,
+    "htf": "1h",
+    "id": "forex:EURUSD|5m|BUY|202611120740",
+    "idm_level": 1.1075423955917358,
+    "idm_taken_time": null,
+    "ltf": "5m",
+    "market": "forex",
+    "market_label": "Forex/Metals",
+    "mss_level": 1.1082788705825806,
+    "mss_time": "2026-11-12T07:40:00+00:00",
+    "ob": [
+      1.107419729232788,
+      1.108033299446106
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 1.1079105138778687,
+    "profile": "5m",
+    "r": null,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "OB + FVG confluence",
+      "Counter-trend vs HTF structure",
+      "Entry in discount of HTF range",
+      "Inside kill-zone",
+      "RR 5.0"
+    ],
+    "rr1": 5.013499236999022,
+    "rr2": 5.706404172185828,
+    "score": 6,
+    "side": "BUY",
+    "sl": 1.107371073961258,
+    "stage": "WAIT_IDM",
+    "status": "PENDING",
+    "sweep_extreme": 1.107419729232788,
+    "sweep_time": "2026-11-12T06:50:00+00:00",
+    "symbol": "EURUSD",
+    "tp1": 1.1095085144042969,
+    "tp2": 1.1097548007965088,
+    "tp_kind": "liquidity",
+    "zone_pd": "discount"
+  }
+}
