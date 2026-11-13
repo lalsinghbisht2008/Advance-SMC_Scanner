@@ -1,1 +1,55 @@
-{}
+{
+  "crypto:ETHUSDT|5m|BUY|202611130615": {
+    "bias": "bullish",
+    "bos_time": "2026-11-13T10:05:00+00:00",
+    "created": "2026-11-13T10:36:57.116406+00:00",
+    "entry": 1907.085,
+    "events_done": 1,
+    "exit_time": "2026-11-13T10:20:00+00:00",
+    "fvg": [
+      1917.98,
+      1926.0
+    ],
+    "hh_level": 1947.69,
+    "htf": "1h",
+    "id": "crypto:ETHUSDT|5m|BUY|202611130615",
+    "idm_level": 1928.06,
+    "idm_taken_time": "2026-11-13T08:20:00+00:00",
+    "ltf": "5m",
+    "market": "crypto",
+    "market_label": "Crypto",
+    "mss_level": 1925.36,
+    "mss_time": "2026-11-13T06:15:00+00:00",
+    "ob": [
+      1895.95,
+      1918.22
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 1913.07,
+    "profile": "5m",
+    "r": 0.0,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "OB + FVG confluence",
+      "HTF structure aligned",
+      "Entry in discount of HTF range",
+      "IDM taken (HH validated)",
+      "RR 6.0"
+    ],
+    "rr1": 6.0,
+    "rr2": 8.24739340338354,
+    "score": 8,
+    "side": "BUY",
+    "sl": 1894.7605,
+    "stage": "ARMED",
+    "status": "EXPIRED",
+    "sweep_extreme": 1895.95,
+    "sweep_time": "2026-11-13T05:55:00+00:00",
+    "symbol": "ETHUSDT",
+    "tp1": 1981.0319999999997,
+    "tp2": 2008.73,
+    "tp_kind": "capped",
+    "zone_pd": "discount"
+  }
+}
