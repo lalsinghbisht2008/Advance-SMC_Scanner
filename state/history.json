@@ -105,5 +105,59 @@
     "tp2": 2008.73,
     "tp_kind": "capped",
     "zone_pd": "discount"
+  },
+  {
+    "bias": "bullish",
+    "bos_time": "2026-11-14T23:45:00+00:00",
+    "created": "2026-11-15T01:01:08.855389+00:00",
+    "entry": 63498.4,
+    "events_done": 2,
+    "exit_time": "2026-11-15T01:00:00+00:00",
+    "fill_time": "2026-11-15T00:50:00+00:00",
+    "fvg": [
+      63639.61,
+      64058.66
+    ],
+    "hh_level": 63966.01,
+    "htf": "1h",
+    "id": "crypto:BTCUSDT|5m|BUY|202611150010",
+    "idm_level": 63520.01,
+    "idm_taken_time": "2026-11-14T23:35:00+00:00",
+    "ltf": "5m",
+    "market": "crypto",
+    "market_label": "Crypto",
+    "mss_level": 64320.0,
+    "mss_time": "2026-11-15T00:10:00+00:00",
+    "ob": [
+      63320.0,
+      63676.8
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 63326.43,
+    "profile": "5m",
+    "r": -1.0,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "OB + FVG confluence",
+      "HTF structure aligned",
+      "Entry in discount of HTF range",
+      "IDM taken (HH validated)",
+      "RR 6.0"
+    ],
+    "rr1": 6.0,
+    "rr2": 6.820151522716581,
+    "score": 8,
+    "side": "BUY",
+    "sl": 63280.95028571429,
+    "stage": "ARMED",
+    "status": "CLOSED_SL",
+    "sweep_extreme": 63320.0,
+    "sweep_time": "2026-11-14T22:50:00+00:00",
+    "symbol": "BTCUSDT",
+    "tp1": 64803.09828571429,
+    "tp2": 64981.44,
+    "tp_kind": "capped",
+    "zone_pd": "discount"
   }
 ]
