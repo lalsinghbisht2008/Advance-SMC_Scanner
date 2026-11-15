@@ -159,5 +159,59 @@
     "tp2": 64981.44,
     "tp_kind": "capped",
     "zone_pd": "discount"
+  },
+  {
+    "bias": "bearish",
+    "bos_time": null,
+    "created": "2026-11-13T18:03:01.651665+00:00",
+    "entry": 0.677598625421524,
+    "events_done": 2,
+    "exit_time": "2026-11-13T21:30:00+00:00",
+    "fill_time": "2026-11-13T19:20:00+00:00",
+    "fvg": [
+      0.6776904463768005,
+      0.6781499981880188
+    ],
+    "hh_level": 0.6781499981880188,
+    "htf": "1h",
+    "id": "forex:AUDUSD|5m|BUY|202611131715",
+    "idm_level": 0.6780120730400085,
+    "idm_taken_time": "2026-11-13T17:45:00+00:00",
+    "ltf": "5m",
+    "market": "forex",
+    "market_label": "Forex/Metals",
+    "mss_level": 0.6781499981880188,
+    "mss_time": "2026-11-13T17:15:00+00:00",
+    "ob": [
+      0.6774609088897705,
+      0.6777363419532776
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 0.6775985956192017,
+    "profile": "5m",
+    "r": -1.0,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "OB + FVG confluence",
+      "Counter-trend vs HTF structure",
+      "Entry in discount of HTF range",
+      "IDM taken (HH validated)",
+      "RR 6.0"
+    ],
+    "rr1": 6.0,
+    "rr2": 8.47632370244559,
+    "score": 6,
+    "side": "BUY",
+    "sl": 0.6774357983044216,
+    "stage": "ARMED",
+    "status": "CLOSED_SL",
+    "sweep_extreme": 0.6774609088897705,
+    "sweep_time": "2026-11-13T16:45:00+00:00",
+    "symbol": "AUDUSD",
+    "tp1": 0.6785755881241389,
+    "tp2": 0.6789788007736206,
+    "tp_kind": "capped",
+    "zone_pd": "discount"
   }
 ]
