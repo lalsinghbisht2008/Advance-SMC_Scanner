@@ -213,5 +213,58 @@
     "tp2": 0.6789788007736206,
     "tp_kind": "capped",
     "zone_pd": "discount"
+  },
+  {
+    "bias": "bearish",
+    "bos_time": null,
+    "created": "2026-11-17T03:22:52.279287+00:00",
+    "entry": 593.185,
+    "events_done": 2,
+    "exit_time": "2026-11-17T03:25:00+00:00",
+    "fill_time": "2026-11-17T03:15:00+00:00",
+    "fvg": [
+      590.73,
+      591.36
+    ],
+    "hh_level": 590.0,
+    "htf": "1h",
+    "id": "crypto:BNBUSDT|5m|SELL|202611170225",
+    "idm_level": 591.6,
+    "idm_taken_time": "2026-11-17T03:05:00+00:00",
+    "ltf": "5m",
+    "market": "crypto",
+    "market_label": "Crypto",
+    "mss_level": 590.41,
+    "mss_time": "2026-11-17T02:25:00+00:00",
+    "ob": [
+      592.4,
+      593.97
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 593.71,
+    "profile": "5m",
+    "r": -1.0,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "HTF structure aligned",
+      "Entry in discount of HTF range",
+      "IDM taken (HH validated)",
+      "RR 3.7"
+    ],
+    "rr1": 3.740300051732523,
+    "rr2": 4.2679772374542475,
+    "score": 7,
+    "side": "SELL",
+    "sl": 594.1515,
+    "stage": "ARMED",
+    "status": "CLOSED_SL",
+    "sweep_extreme": 593.97,
+    "sweep_time": "2026-11-17T02:00:00+00:00",
+    "symbol": "BNBUSDT",
+    "tp1": 589.57,
+    "tp2": 589.06,
+    "tp_kind": "liquidity",
+    "zone_pd": "premium"
   }
 ]
