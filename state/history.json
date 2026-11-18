@@ -266,5 +266,57 @@
     "tp2": 589.06,
     "tp_kind": "liquidity",
     "zone_pd": "premium"
+  },
+  {
+    "bias": "bearish",
+    "bos_time": null,
+    "created": "2026-11-18T01:52:40.291565+00:00",
+    "entry": 75.16,
+    "events_done": 1,
+    "exit_time": "2026-11-18T05:05:00+00:00",
+    "fvg": [
+      74.88,
+      74.97
+    ],
+    "hh_level": null,
+    "htf": "1h",
+    "id": "crypto:SOLUSDT|5m|SELL|202611180100",
+    "idm_level": 75.23,
+    "idm_taken_time": "2026-11-18T01:05:00+00:00",
+    "ltf": "5m",
+    "market": "crypto",
+    "market_label": "Crypto",
+    "mss_level": 74.89,
+    "mss_time": "2026-11-18T01:00:00+00:00",
+    "ob": [
+      75.08,
+      75.24
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 75.27,
+    "profile": "5m",
+    "r": 0.0,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "HTF structure aligned",
+      "Entry in discount of HTF range",
+      "Volume expansion on MSS",
+      "RR 5.6"
+    ],
+    "rr1": 5.573141486810329,
+    "rr2": 6.4124700239805605,
+    "score": 7,
+    "side": "SELL",
+    "sl": 75.45785714285715,
+    "stage": "ARMED",
+    "status": "EXPIRED",
+    "sweep_extreme": 75.43,
+    "sweep_time": "2026-11-18T00:30:00+00:00",
+    "symbol": "SOLUSDT",
+    "tp1": 73.5,
+    "tp2": 73.25,
+    "tp_kind": "liquidity",
+    "zone_pd": "premium"
   }
 ]
