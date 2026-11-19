@@ -97,3 +97,9 @@ git commit -m "SMC scanner v2"
 git push
 ```
 Aur GitHub par: Settings -> Secrets -> Actions mein `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `UPSTOX_ACCESS_TOKEN` banayein.
+
+## 4H structure map + chart alerts (new)
+- LTF model (15m) now starts ONLY after the 4H IDM is swept (`require_htf_idm`); the 15m sweep must come at/after the 4H sweep candle.
+- Every new alert = text + chart image (4H HH/HL/LH/LL, IDM Sweep, BOS, CHoCH; 15m sweep/MSS/IDM/OB/FVG/entry/SL/TP).
+- `python run.py chart --market india --symbol BPCL --send` draws the 4H structure map for any symbol on demand.
+- India default profile is now `15m` (4H -> 15m); `--profile 5m` or `swing` still available.

@@ -12,7 +12,7 @@ from .utils import drop_unclosed, staleness_minutes, tf_delta
 
 
 def params_for(market: Market, profile: Profile) -> Params:
-    p = Params()
+    p = Params(require_htf_idm=True)
     if profile.name == "swing":
         p = replace(p, sweep_lookback=40, max_age_bars=30, fresh_bars=3)
     return p
@@ -49,6 +49,7 @@ def analyze(market: Market, profile: Profile, symbol: str, raw: dict, now: pd.Ti
             continue
         if market.no_new_after and market.local(now).time() >= market.no_new_after:
             continue
+        s.frames = (ltf, htf)                      # for chart rendering (not persisted)
         s.symbol, s.market, s.profile, s.ltf, s.htf = symbol, market.name, profile.name, profile.ltf, profile.htf
         out.append(s)
     best = {}

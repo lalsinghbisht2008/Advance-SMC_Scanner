@@ -6,6 +6,7 @@
   python run.py loop --market india,crypto       # run forever (local server)
   python run.py selftest                         # check tokens / data / Telegram
   python run.py test-telegram
+  python run.py chart --market india --symbol BPCL --send   # 4H structure map
   python run.py summary                          # send trade-result summary to Telegram
   python backtest.py --help
 """
@@ -91,6 +92,35 @@ def cmd_selftest(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_chart(args) -> int:
+    """4H structure map (+LTF) for one symbol -> PNG file, optionally to Telegram."""
+    from smc.chart import render_structure_only
+    from smc.providers import get_provider
+    from smc.strategy import prepare
+    now = pd.Timestamp.now(tz="UTC")
+    name = args.market
+    m = C.MARKETS[name]
+    prof = C.PROFILES[args.profile or C.DEFAULT_PROFILES[name][0]]
+    prov = get_provider(m)
+    spec = prov.resolve(args.symbol)
+    if spec is None:
+        print(f"{args.symbol}: not found on {m.provider}")
+        return 1
+    raw = prov.fetch_frames(spec, prof, now)
+    ltf, htf, _ = prepare(m, prof, raw, now)
+    png, st = render_structure_only(args.symbol.upper(), htf, prof.htf, ltf, prof.ltf)
+    out = f"chart_{args.symbol.upper()}.png"
+    open(out, "wb").write(png)
+    print(f"saved {out}")
+    for side in ("buy", "sell"):
+        d = st[side]
+        print(f"  {side.upper():4s}: {d['state']}" + (f"  IDM {d['level']:.2f}" if d["level"] is not None else ""))
+    if args.send:
+        ok = Telegram().send_photo(png, f"{args.symbol.upper()} · {prof.htf} structure")
+        print("sent" if ok else "Telegram send FAILED")
+    return 0
+
+
 def cmd_summary(args) -> int:
     st = State()
     today = pd.Timestamp.now(tz="Asia/Kolkata").strftime("%Y-%m-%d")
@@ -125,6 +155,11 @@ def main() -> int:
     t.add_argument("--symbol")
     t.add_argument("--telegram", action="store_true", help="also send a Telegram test message")
     sub.add_parser("test-telegram")
+    ch = sub.add_parser("chart", help="draw the HTF structure map for one symbol")
+    ch.add_argument("--market", default="india")
+    ch.add_argument("--symbol", required=True)
+    ch.add_argument("--profile")
+    ch.add_argument("--send", action="store_true", help="send the image to Telegram")
     sm = sub.add_parser("summary")
     sm.add_argument("--send", action="store_true")
     args = ap.parse_args()
@@ -155,6 +190,8 @@ def main() -> int:
         return 0 if ok else 1
     if args.cmd == "summary":
         return cmd_summary(args)
+    if args.cmd == "chart":
+        return cmd_chart(args)
     return 1
 
 

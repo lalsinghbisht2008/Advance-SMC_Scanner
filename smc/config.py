@@ -164,7 +164,7 @@ PROFILES = {
     "swing": Profile("swing", htf="1d", ltf="1h", ltf_days=60, htf_days=400, use_daily=False,
                      description="Swing: Daily liquidity -> 1H execution"),
 }
-DEFAULT_PROFILES = {"india": ["5m"], "mcx": ["5m"], "crypto": ["5m"], "forex": ["5m"]}
+DEFAULT_PROFILES = {"india": ["15m"], "mcx": ["5m"], "crypto": ["5m"], "forex": ["5m"]}
 
 # --------------------------------------------------------------------------- misc
 SCAN_WORKERS = 4

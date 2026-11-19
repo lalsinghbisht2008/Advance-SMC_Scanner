@@ -30,6 +30,8 @@ def trade_from_setup(s: Setup, market: Market, now: pd.Timestamp) -> dict:
         "rr1": s.rr1, "rr2": s.rr2, "status": "PENDING", "events_done": 0,
         "stage": s.stage, "idm_level": s.idm_level, "idm_taken_time": _iso(s.idm_time),
         "hh_level": s.hh_level, "bos_time": _iso(s.bos_time),
+        "htf_idm_level": s.htf_idm_level, "htf_idm_time": _iso(s.htf_idm_time),
+        "htf_high_level": s.htf_high_level,
         "created": _iso(now), "r": None,
     }
 

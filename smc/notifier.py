@@ -35,6 +35,28 @@ class Telegram:
             ok = self._post(chunk) and ok
         return ok
 
+    def send_photo(self, png: bytes, caption: str = "") -> bool:
+        if not self.enabled:
+            return False
+        url = f"https://api.telegram.org/bot{self.token}/sendPhoto"
+        for attempt in range(3):
+            try:
+                r = self.http.post(url, data={"chat_id": self.chat_id, "caption": caption[:1000], "parse_mode": "HTML"},
+                                   files={"photo": ("chart.png", png, "image/png")}, timeout=40)
+                if r.status_code == 200 and r.json().get("ok"):
+                    self.sent += 1
+                    return True
+                if r.status_code == 429:
+                    time.sleep(3)
+                    continue
+                log.error("Telegram photo error %s: %s", r.status_code, r.text[:200])
+                break
+            except requests.RequestException as e:
+                log.error("Telegram photo network error: %s", type(e).__name__)
+                time.sleep(1.5 * (attempt + 1))
+        self.failed += 1
+        return False
+
     def _post(self, text: str) -> bool:
         url = f"https://api.telegram.org/bot{self.token}/sendMessage"
         payload = {"chat_id": self.chat_id, "text": text, "parse_mode": "HTML",
@@ -115,6 +137,10 @@ def setup_message(t: dict) -> str:
                        (" · BOS ✔" if t.get("bos_time") else " · BOS pending")
         else:
             idm_line = f"🧩 IDM level {fmt_price(t['idm_level'])} (sweep pending)"
+    htf_line = None
+    if t.get("htf_idm_level") is not None:
+        htf_line = (f"🧭 {_e(t['htf'])} IDM swept @ {fmt_price(t['htf_idm_level'])} "
+                    f"(validated {fmt_price(t.get('htf_high_level'))}) → {_e(t['ltf'])} model active")
     ob = f"OB {fmt_price(t['ob'][0])} – {fmt_price(t['ob'][1])}" if t.get("ob") else "OB –"
     fvg = f"FVG {fmt_price(t['fvg'][0])} – {fmt_price(t['fvg'][1])}" if t.get("fvg") else "FVG –"
     risk = abs(t["entry"] - t["sl"])
@@ -125,7 +151,7 @@ def setup_message(t: dict) -> str:
         f"🧲 {_e(t['pool_kind'])} swept @ {fmt_price(t['pool_level'])} (wick {fmt_price(t['sweep_extreme'])}, reclaimed)",
         f"🏗 MSS: close beyond {fmt_price(t['mss_level'])} + displacement",
         f"📦 {ob} · {fvg}",
-    ] + ([idm_line] if idm_line else []) + [
+    ] + ([htf_line] if htf_line else []) + ([idm_line] if idm_line else []) + [
         "",
         state,
         f"📍 Entry <b>{fmt_price(t['entry'])}</b>",

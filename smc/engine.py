@@ -61,6 +61,7 @@ class Params:
     require_discount: bool = True # longs only in discount, shorts only in premium
     htf_bias: str = "soft"        # off | soft | hard
     tp1_frac: float = 0.5
+    require_htf_idm: bool = False  # LTF model starts only AFTER the HTF (e.g. 4H) IDM is swept
     require_idm: bool = True      # setup needs an inducement (IDM) that is defined and swept
     idm_n: int = 1                # minor-pivot strength used to find the IDM
 
@@ -152,6 +153,9 @@ class Setup:
     idm_time: Optional[pd.Timestamp] = None
     hh_level: Optional[float] = None
     bos_time: Optional[pd.Timestamp] = None
+    htf_idm_level: Optional[float] = None     # HTF inducement that was swept (real prices)
+    htf_idm_time: Optional[pd.Timestamp] = None   # HTF candle that swept it
+    htf_high_level: Optional[float] = None    # HTF high/low validated by that sweep
     # filled by strategy layer
     symbol: str = ""
     market: str = ""
@@ -178,10 +182,12 @@ def walk_up(h, l, c, ph, pl, n, start=0, hl0=None):
     N = len(c)
     conf_h = {i + n: i for i in ph}
     hl = hl0
+    hl_idx = None
     floor = start - 1
     cand = idm = None
     taken = None
     retrace_low = None
+    retrace_idx = None
     events = []
     for t in range(start, N):
         q = conf_h.get(t)
@@ -196,17 +202,19 @@ def walk_up(h, l, c, ph, pl, n, start=0, hl0=None):
             else:
                 cand = idm = None
         if cand is not None and taken is None and t > cand[1] and l[t] < idm[0]:
-            taken, retrace_low = t, l[t]
-            events.append({"idx": t, "kind": "IDM_TAKEN", "level": idm[0], "high": cand[0], "high_idx": cand[1]})
-        elif taken is not None:
-            retrace_low = min(retrace_low, l[t])
+            taken, retrace_low, retrace_idx = t, l[t], t
+            events.append({"idx": t, "kind": "IDM_TAKEN", "level": idm[0], "idm_idx": idm[1],
+                           "high": cand[0], "high_idx": cand[1]})
+        elif taken is not None and l[t] < retrace_low:
+            retrace_low, retrace_idx = l[t], t
         if hl is not None and c[t] < hl:
-            events.append({"idx": t, "kind": "CHOCH_DOWN", "level": hl})
-            hl, cand, idm, taken, floor = None, None, None, None, t
+            events.append({"idx": t, "kind": "CHOCH_DOWN", "level": hl, "level_idx": hl_idx})
+            hl, hl_idx, cand, idm, taken, floor = None, None, None, None, None, t
             continue
         if taken is not None and t > taken and c[t] > cand[0]:
-            events.append({"idx": t, "kind": "BOS_UP", "level": cand[0]})
-            hl, floor = retrace_low, t
+            events.append({"idx": t, "kind": "BOS_UP", "level": cand[0], "level_idx": cand[1],
+                           "hl": retrace_low, "hl_idx": retrace_idx})
+            hl, hl_idx, floor = retrace_low, retrace_idx, t
             cand = idm = taken = None
     return {"events": events, "cand": cand, "idm": idm}
 
@@ -224,6 +232,27 @@ def htf_bias(f: Frame) -> int:
         if e["kind"] in ("BOS_UP", "CHOCH_DOWN") and (last is None or e["idx"] > last[0]):
             last = (e["idx"], -1 if e["kind"] == "BOS_UP" else 1)
     return last[1] if last else 0
+
+
+def htf_idm_state(f: Frame) -> dict:
+    """Where is the HTF inducement of the CURRENT leg (bullish orientation of this frame)?
+    SWEPT = IDM taken, HH validated, no BOS/CHoCH since  -> the LTF model may start.
+    WAIT  = a candidate high + IDM exist but the IDM has not been swept yet.
+    NONE  = no valid candidate leg."""
+    wk = walk_up(f.h, f.l, f.c, f.ph, f.pl, f.n)
+    last = None
+    for e in wk["events"]:
+        if e["kind"] == "IDM_TAKEN":
+            last = e
+        elif e["kind"] in ("BOS_UP", "CHOCH_DOWN"):
+            last = None
+    if last is not None:
+        return {"state": "SWEPT", "level": last["level"], "idm_idx": last["idm_idx"], "taken_idx": last["idx"],
+                "high": last["high"], "high_idx": last["high_idx"]}
+    if wk["cand"] is not None:
+        return {"state": "WAIT", "level": wk["idm"][0], "idm_idx": wk["idm"][1], "taken_idx": None,
+                "high": wk["cand"][0], "high_idx": wk["cand"][1]}
+    return {"state": "NONE", "level": None, "idm_idx": None, "taken_idx": None, "high": None, "high_idx": None}
 
 
 def dealing_range(f: Frame):
@@ -293,6 +322,9 @@ def detect_long(ltf: Frame, htf: Frame, daily: Optional[Frame], p: Params, info:
         return []
     pools = pools_low(ltf, htf, daily, p)
     trend = htf_bias(htf)
+    hst = htf_idm_state(htf)
+    if p.require_htf_idm and hst["state"] != "SWEPT":
+        return []                                  # HTF inducement not swept -> LTF model stays off
     mph, mpl = _pivots(ltf.h, ltf.l, p.idm_n)
     hi, lo = dealing_range(htf)
     eq = (hi + lo) / 2.0
@@ -320,6 +352,8 @@ def detect_long(ltf: Frame, htf: Frame, daily: Optional[Frame], p: Params, info:
             continue                               # closed below = breakdown, not a sweep
         ext = s + int(np.argmin(ltf.l[s:r + 1]))
         ext_low = ltf.l[ext]
+        if p.require_htf_idm and ltf.t[ext] < htf.t[hst["taken_idx"]]:
+            continue                               # the LTF sweep happened before the HTF IDM sweep
         if pool.level - ext_low > p.max_sweep_atr * ltf.atr[ext]:
             continue
         qs = [q for q in ltf.ph if ext - 80 <= q < ext]
@@ -479,6 +513,9 @@ def detect_long(ltf: Frame, htf: Frame, daily: Optional[Frame], p: Params, info:
             idm_time=ltf.t[taken_ev["idx"]] if taken_ev else None,
             hh_level=float(taken_ev["high"]) if taken_ev else None,
             bos_time=ltf.t[bos_ev["idx"]] if bos_ev else None,
+            htf_idm_level=float(hst["level"]) if hst["state"] == "SWEPT" else None,
+            htf_idm_time=htf.t[hst["taken_idx"]] if hst["state"] == "SWEPT" else None,
+            htf_high_level=float(hst["high"]) if hst["state"] == "SWEPT" else None,
         ))
     return setups
 
@@ -492,6 +529,8 @@ def _unflip(s: Setup) -> Setup:
         tp1=neg(s.tp1), tp2=neg(s.tp2), last_close=neg(s.last_close),
         idm_level=None if s.idm_level is None else neg(s.idm_level),
         hh_level=None if s.hh_level is None else neg(s.hh_level),
+        htf_idm_level=None if s.htf_idm_level is None else neg(s.htf_idm_level),
+        htf_high_level=None if s.htf_high_level is None else neg(s.htf_high_level),
         zone_pd="premium" if s.zone_pd == "discount" else "discount",
         bias={"bullish": "bearish", "bearish": "bullish"}.get(s.bias, "neutral"),
     )

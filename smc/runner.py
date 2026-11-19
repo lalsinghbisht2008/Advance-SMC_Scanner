@@ -79,6 +79,17 @@ def _fetch_one(provider, market, profile, symbol, spec, now):
         return symbol, None, f"{type(e).__name__}: {e}"
 
 
+def _chart_png(s, trade: dict, p):
+    """Chart image for a new setup; a chart problem must never block the text alert."""
+    try:
+        from .chart import render
+        ltf, htf = s.frames
+        return render(trade, ltf, htf, p.htf_swing_n)
+    except Exception as e:
+        log.warning("chart failed for %s: %s: %s", trade.get("symbol"), type(e).__name__, e)
+        return None
+
+
 def scan_market(market: C.Market, profile_names: list, state: State, tg: Telegram, now: pd.Timestamp,
                 dry_run: bool = False, only: Optional[list] = None, provider=None) -> dict:
     stats = dict(market=market.name, symbols=0, setups=0, alerts=0, events=0, errors=0, stale=0)
@@ -151,10 +162,18 @@ def scan_market(market: C.Market, profile_names: list, state: State, tg: Telegra
                 state.add(trade)
                 stats["alerts"] += 1
                 msg = setup_message(trade)
+                png = _chart_png(s, trade, p)
                 if dry_run:
                     log.info("[dry] NEW SETUP\n%s", msg)
+                    if png:
+                        C.CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                        fn = C.CACHE_DIR / (s.id.replace(":", "_").replace("|", "_") + ".png")
+                        fn.write_bytes(png)
+                        log.info("[dry] chart saved: %s", fn)
                 else:
                     tg.send(msg)
+                    if png:
+                        tg.send_photo(png, f"{trade['symbol']} · {trade['htf']} structure → {trade['ltf']} entry")
 
         # health: most symbols stale while market is open
         if results and stats["stale"] >= max(3, len(results) // 2) and not dry_run:
