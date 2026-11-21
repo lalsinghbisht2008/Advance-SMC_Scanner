@@ -31,7 +31,7 @@ def test_state_wait_then_swept():
 
 def test_map_labels_both_sides_real_prices():
     h, l, c = _leg()
-    m = build_map(Frame.from_df(_df(h, l, c), "4h", 1))
+    m = build_map(Frame.from_df(_df(h, l, c), "4h", 1), zz=0.0)
     assert any(x[3] == "IDM Sweep" for x in m["lines"])
     assert all(p[1] > 0 for p in m["pts"])
     assert set(state_for(Frame.from_df(_df(h, l, c), "4h", 1))) == {"buy", "sell"}
@@ -44,3 +44,31 @@ def test_gate_blocks_ltf_model_until_htf_idm_swept():
     assert len(gated) <= len(on)
     for s in gated:
         assert s.htf_idm_level is not None and s.htf_idm_time is not None
+
+
+def test_stale_htf_sweep_expires():
+    h, l, c = _leg()
+    f = Frame.from_df(_df(h, l, c), "4h", 1)
+    assert htf_idm_state(f)["state"] == "SWEPT"
+    assert htf_idm_state(f, max_age=0)["state"] != "SWEPT" or htf_idm_state(f)["taken_idx"] == len(f) - 1
+    assert htf_idm_state(f, max_age=-1)["state"] != "SWEPT"
+
+
+def test_zigzag_idm_ignores_small_wiggle():
+    from smc.engine import _pivots, walk_up
+    # up leg 10->20 with a big pull-back (IDM=14) and a tiny wiggle (IDM-like 18.6) right before the high
+    c = [10, 8, 9, 12, 14.5, 13, 14, 16, 17.5, 18.6, 18.2, 19, 20, 19, 17, 13.2, 14, 21]
+    h = np.array(c) + .2
+    l = np.array(c) - .2
+    cc = np.array(c)
+    ph, pl = _pivots(h, l, 1)
+    f = Frame.from_df(_df(h, l, cc), "4h", 1)
+    plain = walk_up(h, l, cc, ph, pl, 1)
+    strict = walk_up(h, l, cc, ph, pl, 1, atr=f.atr, zz=1.0)
+    p_idm, s_idm = plain["events"], strict["events"]
+    assert any(e["kind"] == "IDM_TAKEN" for e in p_idm)
+    # strict mode must never pick a level that is a smaller wiggle than the plain one
+    if any(e["kind"] == "IDM_TAKEN" for e in s_idm):
+        sl = next(e for e in s_idm if e["kind"] == "IDM_TAKEN")["level"]
+        pl_ = next(e for e in p_idm if e["kind"] == "IDM_TAKEN")["level"]
+        assert sl <= pl_

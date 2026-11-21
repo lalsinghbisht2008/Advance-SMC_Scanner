@@ -108,7 +108,11 @@ def cmd_chart(args) -> int:
         return 1
     raw = prov.fetch_frames(spec, prof, now)
     ltf, htf, _ = prepare(m, prof, raw, now)
-    png, st = render_structure_only(args.symbol.upper(), htf, prof.htf, ltf, prof.ltf)
+    png, st = render_structure_only(args.symbol.upper(), htf, prof.htf, ltf, prof.ltf, htf_n=3)
+    from smc.engine import Frame
+    from smc.structure import build_map
+    for line in build_map(Frame.from_df(htf, prof.htf, 3))["log"][-12:]:
+        print("  ", line)
     out = f"chart_{args.symbol.upper()}.png"
     open(out, "wb").write(png)
     print(f"saved {out}")
@@ -118,6 +122,34 @@ def cmd_chart(args) -> int:
     if args.send:
         ok = Telegram().send_photo(png, f"{args.symbol.upper()} · {prof.htf} structure")
         print("sent" if ok else "Telegram send FAILED")
+    return 0
+
+
+def cmd_find_chat(args) -> int:
+    """Lists the chats that messaged the bot (token is never printed)."""
+    import requests
+    tg = Telegram()
+    if not tg.token:
+        print("TELEGRAM_BOT_TOKEN .env mein nahi mila")
+        return 1
+    me = requests.get(f"https://api.telegram.org/bot{tg.token}/getMe", timeout=15).json()
+    if not me.get("ok"):
+        print("Token galat/revoked hai:", me.get("description"))
+        return 1
+    print(f"Bot: @{me['result']['username']}  <- Telegram mein ISI bot ko Start karke 'hi' bhejein")
+    ups = requests.get(f"https://api.telegram.org/bot{tg.token}/getUpdates", timeout=15).json().get("result", [])
+    seen = {}
+    for u in ups:
+        for k in ("message", "channel_post", "my_chat_member", "edited_message"):
+            ch = (u.get(k) or {}).get("chat")
+            if ch:
+                seen[ch["id"]] = (ch.get("type"), ch.get("title") or ch.get("first_name") or ch.get("username"))
+    if not seen:
+        print("Abhi koi chat nahi mila. Bot ko message bhejein, phir ye command dobara chalayein.")
+        return 1
+    for cid, (typ, name) in seen.items():
+        print(f"  TELEGRAM_CHAT_ID={cid}    ({typ}: {name})")
+    print(f".env mein abhi: TELEGRAM_CHAT_ID={tg.chat_id!r}")
     return 0
 
 
@@ -155,6 +187,7 @@ def main() -> int:
     t.add_argument("--symbol")
     t.add_argument("--telegram", action="store_true", help="also send a Telegram test message")
     sub.add_parser("test-telegram")
+    sub.add_parser("find-chat-id")
     ch = sub.add_parser("chart", help="draw the HTF structure map for one symbol")
     ch.add_argument("--market", default="india")
     ch.add_argument("--symbol", required=True)
@@ -190,6 +223,8 @@ def main() -> int:
         return 0 if ok else 1
     if args.cmd == "summary":
         return cmd_summary(args)
+    if args.cmd == "find-chat-id":
+        return cmd_find_chat(args)
     if args.cmd == "chart":
         return cmd_chart(args)
     return 1

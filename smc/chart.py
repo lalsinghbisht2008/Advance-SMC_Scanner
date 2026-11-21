@@ -70,9 +70,17 @@ def draw_structure(ax, htf_df: pd.DataFrame, htf_tf: str, symbol: str, bars: int
             continue
         col = BULL if side == "bull" else BEAR
         a, b = max(x0 - off, 0), x1 - off
-        ax.hlines(price, a, b + 3, colors=col, linewidth=1.1, zorder=4)
-        ax.text((a + b) / 2, price, f" {label} ", color=TXT, fontsize=8, ha="center", va="center",
-                bbox=dict(facecolor=BG, edgecolor="none", pad=0.6), zorder=5)
+        ax.hlines(price, a, b + 4, colors=col, linewidth=1.1, zorder=4)
+        ax.annotate("", (b + 4, price), (b + 3, price), arrowprops=dict(arrowstyle="->", color=col), zorder=4)
+        ax.text(a + 0.5, price, label, color=TXT, fontsize=8, ha="left", va="bottom", zorder=5,
+                bbox=dict(facecolor=BG, edgecolor="none", pad=0.4, alpha=0.8))
+    for x0, xe, price, label, side in m["rays"]:        # LL/HH/LH/HL levels extended until broken
+        if (xe if xe is not None else len(htf_df)) < off:
+            continue
+        col = BULL if side == "bull" else BEAR
+        a = max(x0 - off, 0)
+        b = (xe - off) if xe is not None else len(d) + 6
+        ax.hlines(price, a, b, colors=col, linewidth=0.9, linestyles=(0, (4, 3)), alpha=0.8, zorder=3)
     for idx, price, label, side in m["pts"]:
         if idx < off:
             continue
@@ -126,8 +134,8 @@ def render(trade: dict, ltf_df: pd.DataFrame, htf_df: pd.DataFrame, htf_n: int =
     side = "SELL" if trade["side"] == "SELL" else "BUY"
     if trade.get("htf_idm_level") is not None:
         a1.axhline(trade["htf_idm_level"], color="#ff9800", linestyle="--", linewidth=0.9, zorder=4)
-        a1.text(0.01, 0.97, f"{trade['htf']} IDM swept @ {trade['htf_idm_level']:.2f}  ->  {side} model active",
-                transform=a1.transAxes, color="#ff9800", fontsize=9, va="top")
+        a1.text(0.01, 0.02, f"{trade['htf']} IDM swept @ {trade['htf_idm_level']:.2f}  ->  {side} model active",
+                transform=a1.transAxes, color="#ff9800", fontsize=9, va="bottom")
     draw_entry(a2, ltf_df, trade)
     fig.tight_layout()
     buf = io.BytesIO()
@@ -145,14 +153,15 @@ def render_structure_only(symbol: str, htf_df: pd.DataFrame, htf_tf: str, ltf_df
     fig.patch.set_facecolor(BG)
     m = draw_structure(axes[0], htf_df, htf_tf, symbol, htf_n=htf_n)
     st = m["state"]
+    prof_tf = htf_tf
     txt = []
     for side, d in (("BUY", st["buy"]), ("SELL", st["sell"])):
         if d["state"] == "SWEPT":
-            txt.append(f"{side}: IDM swept @ {d['level']:.2f} -> {ltf_tf or 'LTF'} model ON")
+            txt.append(f"{side}: {prof_tf} IDM swept @ {d['level']:.2f} -> {ltf_tf or 'LTF'} model ON")
         elif d["state"] == "WAIT":
             txt.append(f"{side}: IDM {d['level']:.2f} not swept yet (waiting)")
-    axes[0].text(0.01, 0.97, "\n".join(txt) or "no valid IDM leg", transform=axes[0].transAxes,
-                 color="#ff9800", fontsize=9, va="top")
+    axes[0].text(0.01, 0.02, "\n".join(txt) or "no fresh 4H IDM sweep (15m model OFF)", transform=axes[0].transAxes,
+                 color="#ff9800", fontsize=9, va="bottom")
     if two:
         d = ltf_df.iloc[-130:]
         _candles(axes[1], d)

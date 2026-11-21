@@ -61,6 +61,8 @@ class Params:
     require_discount: bool = True # longs only in discount, shorts only in premium
     htf_bias: str = "soft"        # off | soft | hard
     tp1_frac: float = 0.5
+    htf_idm_zz: float = 0.0         # HTF IDM must be the start of a real impulse (ZigZag >= k*ATR); 0 = any pivot
+    htf_idm_max_age: int = 24       # HTF IDM sweep older than this many HTF bars = stale (no LTF model)
     require_htf_idm: bool = False  # LTF model starts only AFTER the HTF (e.g. 4H) IDM is swept
     require_idm: bool = True      # setup needs an inducement (IDM) that is defined and swept
     idm_n: int = 1                # minor-pivot strength used to find the IDM
@@ -168,7 +170,26 @@ class Setup:
         return f"{self.market}:{self.symbol}|{self.profile}|{self.side}|{self.mss_time:%Y%m%d%H%M}"
 
 
-def walk_up(h, l, c, ph, pl, n, start=0, hl0=None):
+def _zz_lows(h, l, ph, pl, n, lo, q, t, atr, k):
+    """Indices of SIGNIFICANT pivot lows (ZigZag, reversal >= k*ATR) in (lo, q]. A significant low is the
+    start of a real impulse up, not a small wiggle - this is what a trader calls the IDM of the leg."""
+    items = sorted([(x, h[x], "H") for x in ph if lo < x <= q and x + n <= t] +
+                   [(x, l[x], "L") for x in pl if lo < x < q and x + n <= t])
+    kept = []
+    for idx, pr, ty in items:
+        if not kept:
+            kept.append((idx, pr, ty))
+            continue
+        _, lp, lt = kept[-1]
+        if ty == lt:
+            if (ty == "H" and pr > lp) or (ty == "L" and pr < lp):
+                kept[-1] = (idx, pr, ty)
+        elif abs(pr - lp) >= k * atr[idx]:
+            kept.append((idx, pr, ty))
+    return {i for i, _, ty in kept if ty == "L"}
+
+
+def walk_up(h, l, c, ph, pl, n, start=0, hl0=None, atr=None, zz=0.0):
     """Bullish structure walker with INDUCEMENT (IDM) validation.
 
     candidate high  = confirmed pivot high; its IDM = last pivot low in its left leg
@@ -197,6 +218,9 @@ def walk_up(h, l, c, ph, pl, n, start=0, hl0=None):
                 # leg origin (lowest pivot low) is the start of the leg, not an inducement
                 origin = min(lows, key=lambda x: l[x])
                 lows = [x for x in lows if x > origin]
+            if lows and zz > 0 and atr is not None:
+                sig = _zz_lows(h, l, ph, pl, n, floor, q, t, atr, zz)
+                lows = [x for x in lows if x in sig]       # only the start of a real impulse can be the IDM
             if lows:
                 cand, idm = (h[q], q), (l[lows[-1]], lows[-1])
             else:
@@ -216,14 +240,14 @@ def walk_up(h, l, c, ph, pl, n, start=0, hl0=None):
                            "hl": retrace_low, "hl_idx": retrace_idx})
             hl, hl_idx, floor = retrace_low, retrace_idx, t
             cand = idm = taken = None
-    return {"events": events, "cand": cand, "idm": idm}
+    return {"events": events, "cand": cand, "idm": idm, "hl": hl, "hl_idx": hl_idx}
 
 
-def htf_bias(f: Frame) -> int:
+def htf_bias(f: Frame, zz: float = 0.0) -> int:
     """+1 / -1 / 0 from the latest IDM-validated BOS or CHoCH (both directions)."""
-    up = walk_up(f.h, f.l, f.c, f.ph, f.pl, f.n)["events"]
+    up = walk_up(f.h, f.l, f.c, f.ph, f.pl, f.n, atr=f.atr, zz=zz)["events"]
     fl = f.flip()
-    dn = walk_up(fl.h, fl.l, fl.c, fl.ph, fl.pl, fl.n)["events"]
+    dn = walk_up(fl.h, fl.l, fl.c, fl.ph, fl.pl, fl.n, atr=fl.atr, zz=zz)["events"]
     last = None
     for e in up:
         if e["kind"] in ("BOS_UP", "CHOCH_DOWN") and (last is None or e["idx"] >= last[0]):
@@ -234,18 +258,20 @@ def htf_bias(f: Frame) -> int:
     return last[1] if last else 0
 
 
-def htf_idm_state(f: Frame) -> dict:
+def htf_idm_state(f: Frame, max_age: int = 10 ** 9, zz: float = 0.0) -> dict:
     """Where is the HTF inducement of the CURRENT leg (bullish orientation of this frame)?
     SWEPT = IDM taken, HH validated, no BOS/CHoCH since  -> the LTF model may start.
     WAIT  = a candidate high + IDM exist but the IDM has not been swept yet.
     NONE  = no valid candidate leg."""
-    wk = walk_up(f.h, f.l, f.c, f.ph, f.pl, f.n)
+    wk = walk_up(f.h, f.l, f.c, f.ph, f.pl, f.n, atr=f.atr, zz=zz)
     last = None
     for e in wk["events"]:
         if e["kind"] == "IDM_TAKEN":
             last = e
         elif e["kind"] in ("BOS_UP", "CHOCH_DOWN"):
             last = None
+    if last is not None and len(f) - 1 - last["idx"] > max_age:
+        last = None                                # old sweep: the setup it enabled is long gone
     if last is not None:
         return {"state": "SWEPT", "level": last["level"], "idm_idx": last["idm_idx"], "taken_idx": last["idx"],
                 "high": last["high"], "high_idx": last["high_idx"]}
@@ -321,8 +347,8 @@ def detect_long(ltf: Frame, htf: Frame, daily: Optional[Frame], p: Params, info:
     if N < 60 or len(htf) < 20:
         return []
     pools = pools_low(ltf, htf, daily, p)
-    trend = htf_bias(htf)
-    hst = htf_idm_state(htf)
+    trend = htf_bias(htf, p.htf_idm_zz)
+    hst = htf_idm_state(htf, p.htf_idm_max_age, p.htf_idm_zz)
     if p.require_htf_idm and hst["state"] != "SWEPT":
         return []                                  # HTF inducement not swept -> LTF model stays off
     mph, mpl = _pivots(ltf.h, ltf.l, p.idm_n)
