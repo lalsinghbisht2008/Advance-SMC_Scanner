@@ -1,1 +1,57 @@
-{}
+{
+  "crypto:XRPUSDT|5m|BUY|202611210640": {
+    "bias": "bearish",
+    "bos_time": null,
+    "created": "2026-11-21T07:43:28.202694+00:00",
+    "entry": 0.8694,
+    "events_done": 0,
+    "fvg": [
+      0.8799,
+      0.8864
+    ],
+    "hh_level": 0.9039,
+    "htf": "1h",
+    "htf_high_level": 1.1699,
+    "htf_idm_level": 1.1588,
+    "htf_idm_time": "2026-11-08T16:00:00+00:00",
+    "id": "crypto:XRPUSDT|5m|BUY|202611210640",
+    "idm_level": 0.8961,
+    "idm_taken_time": "2026-11-21T07:15:00+00:00",
+    "ltf": "5m",
+    "market": "crypto",
+    "market_label": "Crypto",
+    "mss_level": 0.8815,
+    "mss_time": "2026-11-21T06:40:00+00:00",
+    "ob": [
+      0.8673,
+      0.8715
+    ],
+    "pool_kind": "Internal swing low",
+    "pool_level": 0.8678,
+    "profile": "5m",
+    "r": null,
+    "reasons": [
+      "Internal swing low swept (internal only)",
+      "Strong displacement",
+      "Counter-trend vs HTF structure",
+      "Entry in discount of HTF range",
+      "IDM taken (HH validated)",
+      "Volume expansion on MSS",
+      "RR 4.1"
+    ],
+    "rr1": 4.136675535639263,
+    "rr2": 4.646408066097179,
+    "score": 6,
+    "side": "BUY",
+    "sl": 0.8591985714285714,
+    "stage": "ARMED",
+    "status": "PENDING",
+    "sweep_extreme": 0.86,
+    "sweep_time": "2026-11-21T06:15:00+00:00",
+    "symbol": "XRPUSDT",
+    "tp1": 0.9116,
+    "tp2": 0.9168,
+    "tp_kind": "liquidity",
+    "zone_pd": "discount"
+  }
+}
