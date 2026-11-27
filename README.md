@@ -103,3 +103,11 @@ Aur GitHub par: Settings -> Secrets -> Actions mein `TELEGRAM_BOT_TOKEN`, `TELEG
 - Every new alert = text + chart image (4H HH/HL/LH/LL, IDM Sweep, BOS, CHoCH; 15m sweep/MSS/IDM/OB/FVG/entry/SL/TP).
 - `python run.py chart --market india --symbol BPCL --send` draws the 4H structure map for any symbol on demand.
 - India default profile is now `15m` (4H -> 15m); `--profile 5m` or `swing` still available.
+
+## Index intraday + options (market `index`: NIFTY, BANKNIFTY, SENSEX)
+- Signal on the INDEX chart: HTF (1D / 4H / 1H) structure + liquidity sweep -> 15m or 1m MSS, IDM, BOS, FVG, OB.
+- BUY setup -> ATM CE, SELL setup -> ATM PE (nearest unexpired weekly). Alert shows strike, expiry, LTP and an
+  estimated premium entry/SL/TP (delta ~0.5, only an estimate; levels that matter are the index levels).
+- Profiles: `i4h15`, `i1h15`, `i1d15` (15m entry) and `i1h1`, `i4h1` (1m entry). Default = all five.
+- Run: `python run.py scan --market index` ; for 1m entries use `python run.py loop --market index --every 1`.
+- `python run.py chart --market index --symbol NIFTY --profile i4h15 --send`

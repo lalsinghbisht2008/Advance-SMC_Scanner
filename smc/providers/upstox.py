@@ -62,6 +62,17 @@ def parse_candles(payload: dict) -> pd.DataFrame:
     return normalize(df)
 
 
+_SHARED_LIMITER: Optional[RateLimiter] = None
+
+
+def shared_limiter() -> RateLimiter:
+    """One budget for every Upstox market (india, index, mcx) - the API limit is per token, not per market."""
+    global _SHARED_LIMITER
+    if _SHARED_LIMITER is None:
+        _SHARED_LIMITER = RateLimiter(UPSTOX_MAX_PER_SEC, UPSTOX_MAX_PER_MIN)
+    return _SHARED_LIMITER
+
+
 class UpstoxProvider(Provider):
     name = "upstox"
 
@@ -69,7 +80,7 @@ class UpstoxProvider(Provider):
                  resolver: InstrumentResolver | None = None, cache_dir: Path = CACHE_DIR, market: str = "india"):
         self.token = token or env("UPSTOX_ACCESS_TOKEN", "UPSTOX_ANALYTICS_TOKEN")
         self.http = http or requests
-        self.limiter = limiter or RateLimiter(UPSTOX_MAX_PER_SEC, UPSTOX_MAX_PER_MIN)
+        self.limiter = limiter or shared_limiter()
         self.resolver = resolver or InstrumentResolver(self.http, cache_dir)
         self.cache_dir = Path(cache_dir)
         self.market = market
@@ -108,6 +119,19 @@ class UpstoxProvider(Provider):
                 msg = r.text[:150]
             raise DataError(f"HTTP {r.status_code}: {msg}")
         raise DataError(f"Upstox request failed after retries ({last})")
+
+    def ltp(self, keys: list) -> dict:
+        """Last traded price per instrument key ({'NSE_FO|123': 101.5}).  {} if the endpoint is not allowed."""
+        try:
+            payload = self._get("https://api.upstox.com/v2/market-quote/ltp?instrument_key=" +
+                                ",".join(quote(k, safe="") for k in keys))
+        except DataError:
+            return {}
+        out = {}
+        for v in (payload.get("data") or {}).values():
+            if v.get("instrument_token") and v.get("last_price") is not None:
+                out[v["instrument_token"]] = float(v["last_price"])
+        return out
 
     # ---- candles -----------------------------------------------------------------------
     def _history(self, key: str, tf: str, start, end) -> pd.DataFrame:

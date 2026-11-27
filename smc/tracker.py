@@ -32,6 +32,7 @@ def trade_from_setup(s: Setup, market: Market, now: pd.Timestamp) -> dict:
         "hh_level": s.hh_level, "bos_time": _iso(s.bos_time),
         "htf_idm_level": s.htf_idm_level, "htf_idm_time": _iso(s.htf_idm_time),
         "htf_high_level": s.htf_high_level,
+        "last_close": s.last_close, "opt": None,
         "created": _iso(now), "r": None,
     }
 

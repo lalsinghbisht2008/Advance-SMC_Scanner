@@ -159,8 +159,19 @@ def setup_message(t: dict) -> str:
         f"🎯 TP1 <b>{fmt_price(t['tp1'])}</b> ({t['rr1']:.1f}R, {_e(t['tp_kind'])}) · TP2 <b>{fmt_price(t['tp2'])}</b> ({t['rr2']:.1f}R)",
         f"↪️ TP1 par 50% book + SL entry par",
     ]
-    step = OPTION_STEP.get(t["symbol"])
-    if step:
+    o = t.get("opt")
+    if o:
+        yr = pd.Timestamp(o["expiry"]).strftime("%d %b")
+        lines.append(f"🎫 <b>{_e(t['symbol'])} {o['strike']:.0f} {o['type']}</b> · expiry {yr}" +
+                     (f" · LTP ₹{o['ltp']:.2f}" if o.get("ltp") else ""))
+        if o.get("entry_prem") is not None:
+            lines.append(f"   Premium (est.): entry ₹{o['entry_prem']:.1f} · SL ₹{o['sl_prem']:.1f} · "
+                         f"TP1 ₹{o['tp1_prem']:.1f} · TP2 ₹{o['tp2_prem']:.1f}  <i>(delta≈{o['delta']}, sirf andaza)</i>")
+        else:
+            lines.append("   Premium estimate nahi mila - index level par entry lein, option ka price khud check karein")
+        lines.append("   <i>Entry/SL/TP index level par hain; trigger index ke zone mein aane par.</i>")
+    elif OPTION_STEP.get(t["symbol"]):
+        step = OPTION_STEP[t["symbol"]]
         atm = round(t["entry"] / step) * step
         lines.append(f"🎫 Option idea: ATM ~{atm} {'CE' if buy else 'PE'} (spot setup, option price alag check karein)")
     lines += ["", "✔ " + " · ".join(_e(r) for r in t["reasons"]),

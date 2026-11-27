@@ -16,6 +16,8 @@ HTF_IDM_ZZ = 2.0      # HTF IDM must follow a >= 2xATR swing (ignores small wigg
 
 def params_for(market: Market, profile: Profile) -> Params:
     p = Params(require_htf_idm=True, htf_idm_zz=HTF_IDM_ZZ)
+    if profile.ltf == "1m":
+        p = replace(p, sweep_lookback=120, max_age_bars=90, fresh_bars=8, ob_search=20)
     if profile.name == "swing":
         p = replace(p, sweep_lookback=40, max_age_bars=30, fresh_bars=3)
     return p

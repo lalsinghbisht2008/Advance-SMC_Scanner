@@ -106,8 +106,9 @@ INDEX_KEYS = {  # Upstox index instrument keys
 }
 OPTION_STEP = {"NIFTY": 50, "BANKNIFTY": 100, "FINNIFTY": 50, "SENSEX": 100}
 
+INDEX_WATCHLIST = ["NIFTY", "BANKNIFTY", "SENSEX"]      # intraday index + options setup (market "index")
+OPTION_DELTA = 0.5          # ATM delta used to translate index levels into premium estimates
 INDIA_WATCHLIST = [
-    "NIFTY", "BANKNIFTY", "FINNIFTY", "SENSEX",
     "RELIANCE", "TCS", "HDFCBANK", "ICICIBANK", "INFY", "SBIN", "BHARTIARTL", "ITC",
     "KOTAKBANK", "LT", "AXISBANK", "HINDUNILVR", "MARUTI", "SUNPHARMA", "TITAN",
     "BAJFINANCE", "ADANIENT", "TATASTEEL", "WIPRO", "HCLTECH", "NTPC", "POWERGRID",
@@ -127,6 +128,11 @@ FOREX_WATCHLIST = {   # display name -> Yahoo symbol
 MARKETS = {
     "india": Market(
         name="india", label="NSE/BSE", provider="upstox", tz="Asia/Kolkata", symbols=INDIA_WATCHLIST,
+        kind="session", open_t=time(9, 15), close_t=time(15, 30),
+        killzones=[(time(9, 20), time(11, 30)), (time(13, 30), time(15, 0))],
+        no_new_after=time(15, 0), same_session=True, eod_exit=True),
+    "index": Market(
+        name="index", label="Index (options)", provider="upstox", tz="Asia/Kolkata", symbols=INDEX_WATCHLIST,
         kind="session", open_t=time(9, 15), close_t=time(15, 30),
         killzones=[(time(9, 20), time(11, 30)), (time(13, 30), time(15, 0))],
         no_new_after=time(15, 0), same_session=True, eod_exit=True),
@@ -161,10 +167,22 @@ PROFILES = {
                   description="Intraday: 1H liquidity -> 5M execution"),
     "15m": Profile("15m", htf="4h", ltf="15m", ltf_days=14, htf_days=90,
                    description="Intraday/BTST: 4H liquidity -> 15M execution"),
+    # --- index intraday (NIFTY / BANKNIFTY / SENSEX): HTF liquidity + structure -> 15m / 1m entry
+    "i1d15": Profile("i1d15", htf="1d", ltf="15m", ltf_days=14, htf_days=400, use_daily=False,
+                     description="Index: 1D liquidity+structure -> 15M entry"),
+    "i4h15": Profile("i4h15", htf="4h", ltf="15m", ltf_days=14, htf_days=90,
+                     description="Index: 4H liquidity+structure -> 15M entry"),
+    "i1h15": Profile("i1h15", htf="1h", ltf="15m", ltf_days=14, htf_days=35,
+                     description="Index: 1H liquidity+structure -> 15M entry"),
+    "i1h1": Profile("i1h1", htf="1h", ltf="1m", ltf_days=3, htf_days=35,
+                    description="Index: 1H liquidity+structure -> 1M entry"),
+    "i4h1": Profile("i4h1", htf="4h", ltf="1m", ltf_days=3, htf_days=90,
+                    description="Index: 4H liquidity+structure -> 1M entry"),
     "swing": Profile("swing", htf="1d", ltf="1h", ltf_days=60, htf_days=400, use_daily=False,
                      description="Swing: Daily liquidity -> 1H execution"),
 }
-DEFAULT_PROFILES = {"india": ["15m"], "mcx": ["15m"], "crypto": ["15m"], "forex": ["15m"]}
+DEFAULT_PROFILES = {"india": ["15m"], "index": ["i4h15", "i1h15", "i1d15", "i1h1", "i4h1"],
+                    "mcx": ["15m"], "crypto": ["15m"], "forex": ["15m"]}
 
 # --------------------------------------------------------------------------- misc
 SCAN_WORKERS = 4

@@ -158,6 +158,9 @@ def scan_market(market: C.Market, profile_names: list, state: State, tg: Telegra
                 if s.state == "PENDING" and not C.ALERT_PENDING:
                     continue
                 trade = trade_from_setup(s, market, now)
+                if market.name == "index":
+                    from .options import plan
+                    trade["opt"] = plan(trade, provider, now)
                 update_trade(trade, ltf_closed, market, p)   # silently sync events already in the past
                 state.add(trade)
                 stats["alerts"] += 1
